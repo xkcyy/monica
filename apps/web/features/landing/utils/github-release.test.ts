@@ -1,3 +1,6 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fetchLatestRelease } from "./github-release";
 
@@ -44,7 +47,14 @@ function mockFetchWithReleases(releases: unknown[]) {
   return fetchMock;
 }
 
+const ORIGINAL_ENV = { ...process.env };
+
+beforeEach(() => {
+  process.env = { ...ORIGINAL_ENV };
+});
+
 afterEach(() => {
+  process.env = { ...ORIGINAL_ENV };
   vi.unstubAllGlobals();
 });
 
@@ -145,5 +155,29 @@ describe("fetchLatestRelease", () => {
     const result = await fetchLatestRelease();
     expect(result.version).toBeNull();
     expect(result.assets).toEqual({});
+  });
+
+  it("uses local desktop downloads before querying GitHub", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "multica-downloads-"));
+    try {
+      await writeFile(
+        join(dir, "multica-desktop-0.0.0-380c6b51-windows-x64.exe"),
+        "installer",
+      );
+      process.env.MULTICA_LOCAL_DOWNLOADS_DIR = dir;
+      process.env.MULTICA_LOCAL_DOWNLOADS_PUBLIC_BASE = "/downloads";
+      const fetchMock = vi.fn();
+      vi.stubGlobal("fetch", fetchMock);
+
+      const result = await fetchLatestRelease();
+
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(result.version).toBe("0.0.0-380c6b51");
+      expect(result.assets.winX64Exe).toBe(
+        "/downloads/multica-desktop-0.0.0-380c6b51-windows-x64.exe",
+      );
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
 });

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // Wrapper around `electron-builder` that keeps the Desktop version in
 // lockstep with the CLI. Both are derived from `git describe --tags
 // --always --dirty` — the same source GoReleaser reads for the CLI
@@ -105,11 +104,19 @@ export function stripLeadingSeparator(argv) {
 export function normalizeGitVersion(raw) {
   if (!raw) return null;
   const stripped = raw.replace(/^v/, "");
-  if (!/^\d/.test(stripped)) {
-    // No reachable tag — `git describe` fell back to just the commit hash.
-    return `0.0.0-${stripped}`;
-  }
-  return stripped;
+  // Electron-updater requires a real semver. When `git describe` has no
+  // reachable tag, it can return just a commit hash (optionally with
+  // `-dirty`). Prefix those ad-hoc identifiers with `0.0.0-` so the result
+  // remains semver-compatible.
+  if (/^\d+\.\d+\.\d+(?:-.+)?$/.test(stripped)) return stripped;
+  return `0.0.0-${stripped}`;
+}
+
+export function buildVersionForWindowsResources(version) {
+  if (!version || !version.includes("-")) return null;
+  const match = /^(\d+)\.(\d+)\.(\d+)/.exec(version);
+  if (!match) return null;
+  return `${match[1]}.${match[2]}.${match[3]}.0`;
 }
 
 function deriveVersion() {
@@ -276,7 +283,11 @@ export function builderArgsForTarget(
   } = {},
 ) {
   const builderArgs = [];
-  if (version) builderArgs.push(`-c.extraMetadata.version=${version}`);
+  if (version) {
+    builderArgs.push(`-c.extraMetadata.version=${version}`);
+    const buildVersion = buildVersionForWindowsResources(version);
+    if (buildVersion) builderArgs.push(`-c.buildVersion=${buildVersion}`);
+  }
   if (disableMacNotarize) builderArgs.push("-c.mac.notarize=false");
   builderArgs.push(PLATFORM_CONFIG[target.platform].builderFlag);
   const requestedTargets = parsed.platformTargets[target.platform];

@@ -32,7 +32,7 @@ export interface DownloadAssets {
 }
 
 const DESKTOP_ARTIFACT_RE =
-  /^multica-desktop-[^-]+-(mac|windows|linux)-([a-z0-9_]+)\.(dmg|zip|exe|AppImage|deb|rpm)$/i;
+  /^multica-desktop-(.+)-(mac|windows|linux)-([a-z0-9_]+)\.(dmg|zip|exe|AppImage|deb|rpm)$/i;
 
 function normalizeLinuxArch(arch: string): "amd64" | "arm64" | null {
   const a = arch.toLowerCase();
@@ -54,9 +54,9 @@ export function parseReleaseAssets(raw: GitHubAsset[]): DownloadAssets {
 
     const match = DESKTOP_ARTIFACT_RE.exec(name);
     if (!match) continue;
-    const platform = match[1];
-    const arch = match[2];
-    const ext = match[3];
+    const platform = match[2];
+    const arch = match[3];
+    const ext = match[4];
     if (!platform || !arch || !ext) continue;
     const archLower = arch.toLowerCase();
     const extLower = ext.toLowerCase();

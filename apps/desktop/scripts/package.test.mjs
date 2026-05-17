@@ -1,7 +1,10 @@
+// @vitest-environment node
+
 import { delimiter, resolve } from "node:path";
 import { describe, it, expect } from "vitest";
 import {
   builderArgsForTarget,
+  buildVersionForWindowsResources,
   envWithLocalBins,
   normalizeGitVersion,
   parsePackageArgs,
@@ -43,6 +46,19 @@ describe("normalizeGitVersion", () => {
     // when there are no tags in the history at all.
     expect(normalizeGitVersion("f1415e96")).toBe("0.0.0-f1415e96");
     expect(normalizeGitVersion("abc1234")).toBe("0.0.0-abc1234");
+    expect(normalizeGitVersion("380c6b51-dirty")).toBe("0.0.0-380c6b51-dirty");
+  });
+});
+
+describe("buildVersionForWindowsResources", () => {
+  it("returns a numeric Windows resource version for prerelease builds", () => {
+    expect(buildVersionForWindowsResources("0.0.0-380c6b51-dirty")).toBe("0.0.0.0");
+    expect(buildVersionForWindowsResources("0.1.35-14-gf1415e96-dirty")).toBe("0.1.35.0");
+  });
+
+  it("returns null for clean releases", () => {
+    expect(buildVersionForWindowsResources("1.2.3")).toBe(null);
+    expect(buildVersionForWindowsResources("")).toBe(null);
   });
 });
 
@@ -187,6 +203,31 @@ describe("builderArgsForTarget", () => {
       "never",
       "-c.directories.output=dist/win-arm64",
       "-c.publish.channel=latest-arm64",
+    ]);
+  });
+
+  it("adds a numeric buildVersion for prerelease Windows builds", () => {
+    expect(
+      builderArgsForTarget(
+        { platform: "win", arch: "x64" },
+        {
+          allPlatforms: false,
+          sharedArgs: ["--publish", "never"],
+          platformTargets: { mac: [], win: ["nsis"], linux: [] },
+          requestedPlatforms: ["win"],
+          requestedArchs: ["x64"],
+        },
+        "0.0.0-380c6b51-dirty",
+        { hostPlatform: "win32" },
+      ),
+    ).toEqual([
+      "-c.extraMetadata.version=0.0.0-380c6b51-dirty",
+      "-c.buildVersion=0.0.0.0",
+      "--win",
+      "nsis",
+      "--x64",
+      "--publish",
+      "never",
     ]);
   });
 

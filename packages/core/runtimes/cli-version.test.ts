@@ -22,4 +22,9 @@ describe("checkQuickCreateCliVersion", () => {
     expect(checkQuickCreateCliVersion("v0.2.15-235-gdaf0e935-dirty").state).toBe("ok");
     expect(checkQuickCreateCliVersion("0.1.0-1-gabc1234").state).toBe("ok");
   });
+
+  it("treats untagged git-describe hashes as dev builds", () => {
+    expect(checkQuickCreateCliVersion("380c6b51").state).toBe("ok");
+    expect(checkQuickCreateCliVersion("380c6b51-dirty").state).toBe("ok");
+  });
 });

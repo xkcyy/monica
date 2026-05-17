@@ -2,6 +2,7 @@ import {
   parseReleaseAssets,
   type DownloadAssets,
 } from "./parse-release-assets";
+import { fetchLocalRelease } from "./local-release";
 
 /**
  * Server-side fetcher for the latest Multica release, designed to
@@ -47,6 +48,9 @@ interface GitHubReleasePayload {
 }
 
 export async function fetchLatestRelease(): Promise<LatestRelease> {
+  const localRelease = await fetchLocalRelease();
+  if (localRelease) return localRelease;
+
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",

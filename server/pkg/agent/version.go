@@ -32,13 +32,13 @@ var (
 	ErrCLIVersionTooOld  = errors.New("multica CLI version is below required minimum")
 )
 
-// devDescribeRe matches the `git describe --tags --always --dirty` output for
-// a build past the latest tag, e.g. `v0.2.15-235-gdaf0e935` (optionally with a
-// trailing `-dirty`). Daemons built from source (Makefile `make build` / `make
-// daemon`) report this shape; tagged releases are bare semver. Treating dev-
-// described daemons as OK keeps `make daemon` unblocked without weakening the
-// gate for staging or production users running stale stable releases.
-var devDescribeRe = regexp.MustCompile(`^v?\d+\.\d+\.\d+-\d+-g[0-9a-fA-F]+`)
+// devBuildRe matches the `git describe --tags --always --dirty` output for dev
+// builds. With tags present this is `v0.2.15-235-gdaf0e935`; in a checkout
+// without tags, `--always` falls back to a bare abbreviated commit like
+// `380c6b51-dirty`. Tagged releases are bare semver. Treating dev builds as OK
+// keeps source-built daemons unblocked without weakening the gate for stable
+// releases, which continue to report semver.
+var devBuildRe = regexp.MustCompile(`^(?:v?\d+\.\d+\.\d+-\d+-g[0-9a-fA-F]+|[0-9a-fA-F]{7,40})(?:-dirty)?$`)
 
 // CheckMinCLIVersion returns nil when `detected` parses as ≥ minimum. Returns
 // ErrCLIVersionMissing for empty or unparsable input, and ErrCLIVersionTooOld
@@ -53,7 +53,7 @@ func CheckMinCLIVersion(detected string) error {
 	if d == "" {
 		return ErrCLIVersionMissing
 	}
-	if devDescribeRe.MatchString(d) {
+	if devBuildRe.MatchString(d) {
 		return nil
 	}
 	parsed, err := parseSemver(d)

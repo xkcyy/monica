@@ -1,0 +1,108 @@
+# Production Docker Compose for a local Windows host.
+#
+# Persistent host data is rooted at D:\00Docker\multica:
+#   D:\00Docker\multica\postgres\data   PostgreSQL data
+#   D:\00Docker\multica\backend\uploads uploaded files
+#   D:\00Docker\multica\downloads       desktop installers served by /download
+#
+# Run scripts/prepare-production-data.ps1 before first use if you have an
+# existing Docker named volume to migrate.
+
+name: multica
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-multica}
+      POSTGRES_USER: ${POSTGRES_USER:-multica}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-multica}
+    ports:
+      - "${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - "D:/00Docker/multica/postgres/data:/var/lib/postgresql/data"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-multica} -d ${POSTGRES_DB:-multica}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: multica-backend:production
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${PORT:-8080}:8080"
+    volumes:
+      - "D:/00Docker/multica/backend/uploads:/app/data/uploads"
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-multica}:${POSTGRES_PASSWORD:-multica}@postgres:5432/${POSTGRES_DB:-multica}?sslmode=disable
+      PORT: "8080"
+      METRICS_ADDR: ${METRICS_ADDR:-}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-noreply@multica.ai}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_TLS_INSECURE: ${SMTP_TLS_INSECURE:-false}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:3000/auth/callback}
+      S3_BUCKET: ${S3_BUCKET:-}
+      S3_REGION: ${S3_REGION:-us-west-2}
+      CLOUDFRONT_DOMAIN: ${CLOUDFRONT_DOMAIN:-}
+      CLOUDFRONT_KEY_PAIR_ID: ${CLOUDFRONT_KEY_PAIR_ID:-}
+      CLOUDFRONT_PRIVATE_KEY: ${CLOUDFRONT_PRIVATE_KEY:-}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-}
+      APP_ENV: ${APP_ENV:-production}
+      MULTICA_DEV_VERIFICATION_CODE: ${MULTICA_DEV_VERIFICATION_CODE:-}
+      MULTICA_APP_URL: ${MULTICA_APP_URL:-http://localhost:3000}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
+      ALLOWED_EMAILS: ${ALLOWED_EMAILS:-}
+      ALLOWED_EMAIL_DOMAINS: ${ALLOWED_EMAIL_DOMAINS:-}
+      GITHUB_APP_SLUG: ${GITHUB_APP_SLUG:-}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
+    restart: unless-stopped
+
+  web:
+    image: multica-web:production
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        REMOTE_API_URL: http://backend:8080
+        DOCS_URL: http://docs:4000
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://localhost:8080/ws}
+        NEXT_PUBLIC_APP_VERSION: production
+    depends_on:
+      - backend
+      - docs
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - "D:/00Docker/multica/downloads:/app/apps/web/public/downloads:ro"
+    environment:
+      HOSTNAME: "0.0.0.0"
+      MULTICA_LOCAL_DOWNLOADS_DIR: /app/apps/web/public/downloads
+      MULTICA_LOCAL_DOWNLOADS_PUBLIC_BASE: /downloads
+    restart: unless-stopped
+
+  docs:
+    image: multica-docs:production
+    build:
+      context: .
+      dockerfile: Dockerfile.docs
+    ports:
+      - "${DOCS_PORT:-4000}:4000"
+    environment:
+      HOSTNAME: "0.0.0.0"
+    restart: unless-stopped
