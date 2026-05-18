@@ -1,0 +1,36 @@
+name: Deploy Production
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: monica-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy local Windows production
+    if: ${{ (github.event_name == 'workflow_dispatch' && github.ref_name == 'main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
+    runs-on: [self-hosted, Windows, monica-prod]
+    timeout-minutes: 90
+    env:
+      MONICA_PRODUCTION_ROOT: D:\00self-ai\monica
+      MONICA_DEPLOY_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+      MONICA_DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Deploy from local production checkout
+        run: |
+          & "$env:MONICA_PRODUCTION_ROOT\scripts\deploy-production.ps1" `
+            -RepoRoot "$env:MONICA_PRODUCTION_ROOT" `
+            -Branch "$env:MONICA_DEPLOY_BRANCH" `
+            -ExpectedCommit "$env:MONICA_DEPLOY_SHA"

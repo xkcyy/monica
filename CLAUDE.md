@@ -25,6 +25,26 @@ Multica is an AI-native task management platform — like Linear, but with AI ag
 - Supports local (daemon) and cloud agent runtimes
 - Built for 2-10 person AI-native teams
 
+## Local Production Environment
+
+This checkout also backs a local Windows production deployment. Use `docker-compose.production.yml` with the root `.env` file when checking production behavior.
+
+- Public app origin: `http://home.xkcyy.com:60089`
+- Public GitHub setup callback: `http://home.xkcyy.com:60089/api/github/setup`
+- Public GitHub webhook endpoint: `http://home.xkcyy.com:60089/api/webhooks/github`
+- Local Web app: `http://localhost:60089`
+- Local API/backend: `http://localhost:18080` (not intended as the public entrypoint)
+- Local WebSocket: proxied through `ws://home.xkcyy.com:60089/ws` in production
+- Docs: `http://localhost:4000`
+- PostgreSQL: `localhost:15432` on the host, `postgres:5432` inside Compose
+- Persistent host data: `D:\00Docker\multica`
+
+GitHub integration is configured through `.env` (`GITHUB_APP_SLUG`, `GITHUB_WEBHOOK_SECRET`) and the backend service in `docker-compose.production.yml`. The production web container proxies `/api/*`, `/auth/*`, `/uploads/*`, and `/ws` to the backend, so the single public port `60089` can serve both the app and GitHub callbacks. After changing GitHub env vars, rebuild/restart the production stack.
+
+Production redeploys are handled by a GitHub Actions self-hosted runner on the Windows host, labeled `monica-prod`. Install the runner outside the app at `D:\00Docker\actions-runner\monica-prod`; its `_work` directory also belongs under that path. After the `CI` workflow succeeds on `main`, `.github/workflows/deploy-production.yml` calls `D:\00self-ai\monica\scripts\deploy-production.ps1` from the persistent production checkout; the workflow can also be run manually from `main`. The workflow intentionally does not expose a public deploy webhook or Jenkins port; the runner connects outbound to GitHub, and port `60089` remains dedicated to the app.
+
+Keep deployment control outside the Monica runtime. The `/api/webhooks/github` endpoint is for Monica's product GitHub integration, not production deployment. Do not add deploy hooks to the Monica backend or to `docker-compose.production.yml`; a redeploy restarts those containers and would interrupt its own control path.
+
 ## Architecture
 
 **Go backend + monorepo frontend (pnpm workspaces + Turborepo) with shared packages.**
