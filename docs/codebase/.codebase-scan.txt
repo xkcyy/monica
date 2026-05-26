@@ -1,0 +1,615 @@
+
+=== DIRECTORY TREE (max depth 3, source files only) ===
+.agents
+.agents\skills
+.agents\skills\acquire-codebase-knowledge
+.agents\skills\acquire-codebase-knowledge\assets
+.agents\skills\acquire-codebase-knowledge\references
+.agents\skills\acquire-codebase-knowledge\scripts
+.agents\skills\acquire-codebase-knowledge\SKILL.md
+.agents\skills\acquire-codebase-knowledge\skill.zh.md
+.agents\skills\brainstorming
+.agents\skills\brainstorming\scripts
+.agents\skills\brainstorming\SKILL.md
+.agents\skills\brainstorming\skill.zh.md
+.agents\skills\brainstorming\spec-document-reviewer-prompt.md
+.agents\skills\brainstorming\visual-companion.md
+.agents\skills\dispatching-parallel-agents
+.agents\skills\dispatching-parallel-agents\SKILL.md
+.agents\skills\dispatching-parallel-agents\skill.zh.md
+.agents\skills\executing-plans
+.agents\skills\executing-plans\SKILL.md
+.agents\skills\executing-plans\skill.zh.md
+.agents\skills\finishing-a-development-branch
+.agents\skills\finishing-a-development-branch\SKILL.md
+.agents\skills\finishing-a-development-branch\skill.zh.md
+.agents\skills\receiving-code-review
+.agents\skills\receiving-code-review\SKILL.md
+.agents\skills\receiving-code-review\skill.zh.md
+.agents\skills\requesting-code-review
+.agents\skills\requesting-code-review\code-reviewer.md
+.agents\skills\requesting-code-review\SKILL.md
+.agents\skills\requesting-code-review\skill.zh.md
+.agents\skills\subagent-driven-development
+.agents\skills\subagent-driven-development\code-quality-reviewer-prompt.md
+.agents\skills\subagent-driven-development\implementer-prompt.md
+.agents\skills\subagent-driven-development\SKILL.md
+.agents\skills\subagent-driven-development\skill.zh.md
+.agents\skills\subagent-driven-development\spec-reviewer-prompt.md
+.agents\skills\systematic-debugging
+.agents\skills\systematic-debugging\condition-based-waiting-example.ts
+.agents\skills\systematic-debugging\condition-based-waiting.md
+.agents\skills\systematic-debugging\CREATION-LOG.md
+.agents\skills\systematic-debugging\defense-in-depth.md
+.agents\skills\systematic-debugging\find-polluter.sh
+.agents\skills\systematic-debugging\root-cause-tracing.md
+.agents\skills\systematic-debugging\SKILL.md
+.agents\skills\systematic-debugging\skill.zh.md
+.agents\skills\systematic-debugging\test-academic.md
+.agents\skills\systematic-debugging\test-pressure-1.md
+.agents\skills\systematic-debugging\test-pressure-2.md
+.agents\skills\systematic-debugging\test-pressure-3.md
+.agents\skills\test-driven-development
+.agents\skills\test-driven-development\SKILL.md
+.agents\skills\test-driven-development\skill.zh.md
+.agents\skills\test-driven-development\testing-anti-patterns.md
+.agents\skills\using-git-worktrees
+.agents\skills\using-git-worktrees\SKILL.md
+.agents\skills\using-git-worktrees\skill.zh.md
+.agents\skills\using-superpowers
+.agents\skills\using-superpowers\references
+.agents\skills\using-superpowers\SKILL.md
+.agents\skills\using-superpowers\skill.zh.md
+.agents\skills\verification-before-completion
+.agents\skills\verification-before-completion\SKILL.md
+.agents\skills\verification-before-completion\skill.zh.md
+.agents\skills\writing-plans
+.agents\skills\writing-plans\plan-document-reviewer-prompt.md
+.agents\skills\writing-plans\SKILL.md
+.agents\skills\writing-plans\skill.zh.md
+.agents\skills\writing-skills
+.agents\skills\writing-skills\anthropic-best-practices.md
+.agents\skills\writing-skills\examples
+.agents\skills\writing-skills\graphviz-conventions.dot
+.agents\skills\writing-skills\persuasion-principles.md
+.agents\skills\writing-skills\render-graphs.js
+.agents\skills\writing-skills\SKILL.md
+.agents\skills\writing-skills\skill.zh.md
+.agents\skills\writing-skills\testing-skills-with-subagents.md
+.dockerignore
+.env
+.env.example
+.gitattributes
+.github
+.github\ISSUE_TEMPLATE
+.github\ISSUE_TEMPLATE\bug_report.yml
+.github\ISSUE_TEMPLATE\config.yml
+.github\ISSUE_TEMPLATE\feature_request.yml
+.github\PULL_REQUEST_TEMPLATE.md
+.github\workflows
+.github\workflows\ci.yml
+.github\workflows\deploy-production.yml
+.github\workflows\desktop-smoke.yml
+.github\workflows\release.yml
+.gitignore
+.goreleaser.yml
+.npmrc
+.vercelignore
+AGENTS.md
+apps
+apps\desktop
+apps\desktop\.gitignore
+apps\desktop\electron-builder.yml
+apps\desktop\electron.vite.config.ts
+apps\desktop\eslint.config.mjs
+apps\desktop\package.json
+apps\desktop\resources
+apps\desktop\resources\icon.png
+apps\desktop\scripts
+apps\desktop\scripts\brand-dev-electron.mjs
+apps\desktop\scripts\bundle-cli.mjs
+apps\desktop\scripts\package.mjs
+apps\desktop\scripts\package.test.mjs
+apps\desktop\src
+apps\desktop\src\main
+apps\desktop\src\preload
+apps\desktop\src\renderer
+apps\desktop\src\shared
+apps\desktop\test
+apps\desktop\test\setup.ts
+apps\desktop\tsconfig.json
+apps\desktop\tsconfig.node.json
+apps\desktop\tsconfig.web.json
+apps\desktop\vitest.config.ts
+apps\docs
+apps\docs\.gitignore
+apps\docs\.source
+apps\docs\.source\index.ts
+apps\docs\app
+apps\docs\app\[lang]
+apps\docs\app\api
+apps\docs\app\global.css
+apps\docs\app\layout.config.tsx
+apps\docs\app\sitemap.ts
+apps\docs\components
+apps\docs\components\architecture-diagram.tsx
+apps\docs\components\docs-settings.tsx
+apps\docs\components\editorial.tsx
+apps\docs\components\hero.tsx
+apps\docs\components\locale-link.tsx
+apps\docs\components\mermaid.tsx
+apps\docs\content
+apps\docs\content\docs
+apps\docs\lib
+apps\docs\lib\i18n.ts
+apps\docs\lib\locale-link.test.ts
+apps\docs\lib\locale-link.ts
+apps\docs\lib\site.ts
+apps\docs\lib\source.ts
+apps\docs\lib\translations.ts
+apps\docs\middleware.ts
+apps\docs\next-env.d.ts
+apps\docs\next.config.mjs
+apps\docs\package.json
+apps\docs\postcss.config.mjs
+apps\docs\source.config.ts
+apps\docs\tsconfig.json
+apps\docs\vitest.config.ts
+apps\web
+apps\web\.gitignore
+apps\web\app
+apps\web\app\(auth)
+apps\web\app\(landing)
+apps\web\app\[workspaceSlug]
+apps\web\app\auth
+apps\web\app\custom.css
+apps\web\app\favicon.ico
+apps\web\app\globals.css
+apps\web\app\layout.tsx
+apps\web\app\not-found.tsx
+apps\web\app\robots.ts
+apps\web\app\sitemap.ts
+apps\web\components
+apps\web\components\pageview-tracker.tsx
+apps\web\components\theme-provider.tsx
+apps\web\components\web-providers.tsx
+apps\web\components.json
+apps\web\eslint.config.mjs
+apps\web\features
+apps\web\features\auth
+apps\web\features\landing
+apps\web\next-env.d.ts
+apps\web\next.config.ts
+apps\web\package.json
+apps\web\platform
+apps\web\platform\navigation.tsx
+apps\web\postcss.config.mjs
+apps\web\proxy.ts
+apps\web\public
+apps\web\public\favicon.svg
+apps\web\public\images
+apps\web\test
+apps\web\test\helpers.tsx
+apps\web\test\setup.ts
+apps\web\tsconfig.json
+apps\web\vitest.config.ts
+CLAUDE.md
+CLI_AND_DAEMON.md
+CLI_INSTALL.md
+CONTRIBUTING.md
+docker
+docker\entrypoint.sh
+docker-compose.override.yml
+
+=== STACK DETECTION (manifest files) ===
+
+--- Makefile ---
+.PHONY: help makehelp dev server daemon cli multica build test migrate-up migrate-down sqlc seed clean setup start stop check worktree-env setup-main start-main stop-main check-main setup-worktree start-worktree stop-worktree check-worktree db-up db-down db-reset selfhost selfhost-build selfhost-stop
+
+MAIN_ENV_FILE ?= .env
+WORKTREE_ENV_FILE ?= .env.worktree
+ENV_FILE ?= $(if $(wildcard $(MAIN_ENV_FILE)),$(MAIN_ENV_FILE),$(if $(wildcard $(WORKTREE_ENV_FILE)),$(WORKTREE_ENV_FILE),$(MAIN_ENV_FILE)))
+
+ifneq ($(wildcard $(ENV_FILE)),)
+include $(ENV_FILE)
+endif
+
+POSTGRES_DB ?= multica
+POSTGRES_USER ?= multica
+POSTGRES_PASSWORD ?= multica
+POSTGRES_PORT ?= 5432
+PORT ?= 8080
+FRONTEND_PORT ?= 3000
+FRONTEND_ORIGIN ?= http://localhost:$(FRONTEND_PORT)
+MULTICA_APP_URL ?= $(FRONTEND_ORIGIN)
+DATABASE_URL ?= postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable
+NEXT_PUBLIC_API_URL ?= http://localhost:$(PORT)
+NEXT_PUBLIC_WS_URL ?= ws://localhost:$(PORT)/ws
+GOOGLE_REDIRECT_URI ?= $(FRONTEND_ORIGIN)/auth/callback
+MULTICA_SERVER_URL ?= ws://localhost:$(PORT)/ws
+
+export
+
+MULTICA_ARGS ?= $(ARGS)
+
+COMPOSE := docker compose
+
+define REQUIRE_ENV
+	@if [ ! -f "$(ENV_FILE)" ]; then \
+		echo "Missing env file: $(ENV_FILE)"; \
+		echo "Create .env from .env.example, or run 'make worktree-env' and use .env.worktree."; \
+		exit 1; \
+	fi
+endef
+
+# Default target changed from selfhost to help: bare `make` now prints this help
+# instead of launching a full Docker Compose build, which is safer for onboarding.
+.DEFAULT_GOAL := help
+
+##@ Help
+
+help: ## Show available make targets and common local workflows
+	@awk 'BEGIN {FS = ":.*## "; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nQuick start:\n  \033[36mmake dev\033[0m          Bootstrap the current checkout and start everything\n  \033[36mmake check\033[0m        Run the full local verification pipeline\n\nCheckout modes:\n  Main checkout uses \033[36m.env\033[0m\n  Worktrees use \033[36m.env.worktree\033[0m (generate with \033[36mmake worktree-env\033[0m)\n\n"} \
+		/^##@/ {printf "\n\033[1m%s\033[0m\n", substr($$0, 5); next} \
+		/^[a-zA-Z0-9_.-]+:.*## / {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+makehelp: help ## Alias for `make help`
+
+# ---------- Self-hosting (Docker Compose) ----------
+##@ Self-hosting
+
+selfhost: ## Create .env if needed, then pull and start the official self-hosted images
+	@if [ ! -f .env ]; then \
+		echo "==> Creating .env from .env.example..."; \
+		cp .env.example .env; \
+		JWT=$$(openssl rand -hex 32); \
+		if [ "$$(uname)" = "Darwin" ]; then \
+			sed -i '' "s/^JWT_SECRET=.*/JWT_SECRET=$$JWT/" .env; \
+		else \
+			sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$$JWT/" .env; \
+		fi; \
+		echo "==> Generated random JWT_SECRET"; \
+	fi
+	@echo "==> Pulling official Multica images..."
+	@if ! docker compose -f docker-compose.selfhost.yml pull; then \
+		echo ""; \
+		echo "Official images for tag '$${MULTICA_IMAGE_TAG:-latest}' are not published yet."; \
+		echo "If this is before the first GHCR release, build from the current checkout:"; \
+		echo "  make selfhost-build"; \
+		exit 1; \
+	fi
+	@echo "==> Starting Multica via Docker Compose..."
+	docker compose -f docker-compose.selfhost.yml up -d
+	@echo "==> Waiting for backend to be ready..."
+	@for i in $$(seq 1 30); do \
+		if curl -sf http://localhost:$${PORT:-8080}/health > /dev/null 2>&1; then \
+			break; \
+
+[TRUNCATED] Showing first 80 of 310 lines.
+--- package.json ---
+{
+  "name": "multica",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:web": "turbo dev --filter=@multica/web",
+    "dev:docs": "turbo dev --filter=@multica/docs",
+    "dev:desktop": "turbo dev --filter=@multica/desktop",
+    "dev:desktop:staging": "turbo dev:staging --filter=@multica/desktop",
+    "build": "turbo build",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "clean": "turbo clean && rm -rf node_modules",
+    "ui:add": "cd packages/ui && npx shadcn@latest add",
+    "generate:reserved-slugs": "node scripts/generate-reserved-slugs.mjs"
+  },
+  "packageManager": "pnpm@10.28.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "electron"
+    ],
+    "overrides": {
+      "@types/react": "catalog:",
+      "@types/react-dom": "catalog:"
+    }
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "catalog:",
+    "@types/pg": "^8.20.0",
+    "pg": "^8.20.0",
+    "turbo": "^2.5.4",
+    "typescript": "catalog:"
+  }
+}
+
+--- pnpm-lock.yaml ---
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+catalogs:
+  default:
+    '@formatjs/intl-localematcher':
+      specifier: ^0.8.4
+      version: 0.8.4
+    '@tailwindcss/postcss':
+      specifier: ^4
+      version: 4.2.2
+    '@tanstack/react-query':
+      specifier: ^5.96.2
+      version: 5.96.2
+    '@tanstack/react-table':
+      specifier: ^8.21.3
+      version: 8.21.3
+    '@testing-library/jest-dom':
+      specifier: ^6.9.1
+      version: 6.9.1
+    '@testing-library/react':
+      specifier: ^16.3.2
+      version: 16.3.2
+    '@testing-library/user-event':
+      specifier: ^14.6.1
+      version: 14.6.1
+    '@types/node':
+      specifier: ^25.0.10
+      version: 25.5.0
+    '@vitejs/plugin-react':
+      specifier: ^6.0.1
+      version: 6.0.1
+    class-variance-authority:
+      specifier: ^0.7.1
+      version: 0.7.1
+    clsx:
+      specifier: ^2.1.1
+      version: 2.1.1
+    eslint-plugin-i18next:
+      specifier: ^6.1.4
+      version: 6.1.4
+    i18next:
+      specifier: ^26.0.8
+      version: 26.0.8
+    jsdom:
+      specifier: ^29.0.1
+      version: 29.0.1
+    katex:
+      specifier: ^0.16.45
+      version: 0.16.45
+    lucide-react:
+      specifier: ^1.0.1
+      version: 1.0.1
+    mermaid:
+      specifier: ^11.14.0
+      version: 11.14.0
+    posthog-js:
+      specifier: ^1.176.1
+      version: 1.369.3
+    react:
+      specifier: 19.2.3
+      version: 19.2.3
+    react-dom:
+      specifier: 19.2.3
+      version: 19.2.3
+    react-i18next:
+      specifier: ^17.0.6
+      version: 17.0.6
+    react-virtuoso:
+      specifier: ^4.14.0
+      version: 4.18.7
+    rehype-katex:
+      specifier: ^7.0.1
+      version: 7.0.1
+    remark-math:
+      specifier: ^6.0.0
+      version: 6.0.0
+
+[TRUNCATED] Showing first 80 of 15433 lines.
+
+=== ENTRY POINTS ===
+No common entry points found. Check 'main' or 'scripts.start' in manifest files above.
+
+=== LINTING AND FORMATTING CONFIG ===
+No linting or formatting config files found in project root.
+
+=== ENVIRONMENT VARIABLE TEMPLATES ===
+--- .env.example ---
+# Database
+POSTGRES_DB=multica
+POSTGRES_USER=multica
+POSTGRES_PASSWORD=multica
+POSTGRES_PORT=5432
+DATABASE_URL=postgres://multica:multica@localhost:5432/multica?sslmode=disable
+# Optional pgxpool tuning. Defaults are 25 / 5 per pod and are usually fine.
+# You can also set pool_max_conns / pool_min_conns as query params on
+# DATABASE_URL; env vars below take precedence over URL params.
+# DATABASE_MAX_CONNS=25
+# DATABASE_MIN_CONNS=5
+
+# Server
+# APP_ENV gates production safety checks. Docker self-host pins APP_ENV to
+# "production" by default. Local dev can leave it unset.
+# See SELF_HOSTING.md for the full login setup.
+APP_ENV=
+# Optional local/testing shortcut. Empty by default, so there is no fixed
+# verification code. Without RESEND_API_KEY, generated codes print to stdout.
+# If you need deterministic local automation, set a 6-digit value such as
+# 888888 and keep APP_ENV non-production. This is ignored when APP_ENV=production.
+MULTICA_DEV_VERIFICATION_CODE=
+PORT=8080
+# Prometheus metrics are disabled by default. When enabled, bind to loopback
+# unless you protect the listener with private networking, allowlists, or
+# proxy auth. Do not expose this endpoint through the public app/API ingress.
+# HTTP request metrics start accumulating only when this listener is enabled.
+# METRICS_ADDR=127.0.0.1:9090
+JWT_SECRET=change-me-in-production
+MULTICA_SERVER_URL=ws://localhost:8080/ws
+MULTICA_APP_URL=http://localhost:3000
+MULTICA_DAEMON_CONFIG=
+MULTICA_WORKSPACE_ID=
+MULTICA_DAEMON_ID=
+MULTICA_DAEMON_DEVICE_NAME=
+MULTICA_DAEMON_POLL_INTERVAL=3s
+MULTICA_DAEMON_HEARTBEAT_INTERVAL=15s
+MULTICA_CODEX_PATH=codex
+MULTICA_CODEX_MODEL=
+MULTICA_CODEX_WORKDIR=
+MULTICA_CODEX_TIMEOUT=20m
+
+# Self-host image channel
+# Default stable release channel. Pin to an exact release like v0.2.4 if you
+# want to stay on a specific version. If the selected tag has not been
+# published to GHCR yet, use make selfhost-build / the build override instead.
+MULTICA_IMAGE_TAG=latest
+MULTICA_BACKEND_IMAGE=ghcr.io/multica-ai/multica-backend
+MULTICA_WEB_IMAGE=ghcr.io/multica-ai/multica-web
+
+# Email
+# Two delivery options - only one needs to be configured:
+#
+# Option A: Resend (SaaS, recommended for cloud deployments)
+#   Set RESEND_API_KEY to a key from resend.com and verify your sending domain there.
+#   For local/dev use, leave RESEND_API_KEY empty - codes print to stdout. To
+#   accept a fixed local code, also set MULTICA_DEV_VERIFICATION_CODE above
+#   (ignored when APP_ENV=production).
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=noreply@multica.ai
+#
+# Option B: SMTP relay (for self-hosted / on-premise deployments)
+#   Takes priority over Resend when SMTP_HOST is set.
+#   Supports unauthenticated relay (leave SMTP_USERNAME empty) and authenticated SMTP.
+#   Set SMTP_TLS_INSECURE=true only for private CA or self-signed certificates.
+SMTP_HOST=
+SMTP_PORT=25
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_TLS_INSECURE=false
+
+# Google OAuth
+# The web login page reads GOOGLE_CLIENT_ID from /api/config at runtime, so
+# changing it only requires restarting the backend / compose stack. No web
+# rebuild is needed.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/callback
+
+# S3 / CloudFront
+
+[TRUNCATED] Showing first 80 of 161 lines.
+
+=== TODO / FIXME / HACK (production code only, test dirs excluded) ===
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:28: TODO_LIMIT = 60
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:291: """Search for TODO/FIXME/HACK comments."""
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:291: """Search for TODO/FIXME/HACK comments."""
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:291: """Search for TODO/FIXME/HACK comments."""
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:293: patterns = ["TODO", "FIXME", "HACK"]
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:293: patterns = ["TODO", "FIXME", "HACK"]
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:293: patterns = ["TODO", "FIXME", "HACK"]
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:320: return todos[:TODO_LIMIT]
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:617: # TODOs
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:620: print_section("TODO / FIXME / HACK (production code only, test dirs excluded)", todos, output_file)
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:620: print_section("TODO / FIXME / HACK (production code only, test dirs excluded)", todos, output_file)
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:620: print_section("TODO / FIXME / HACK (production code only, test dirs excluded)", todos, output_file)
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:622: print_section("TODO / FIXME / HACK (production code only, test dirs excluded)", ["None found."], output_file)
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:622: print_section("TODO / FIXME / HACK (production code only, test dirs excluded)", ["None found."], output_file)
+.agents\skills\acquire-codebase-knowledge\scripts\scan.py:622: print_section("TODO / FIXME / HACK (production code only, test dirs excluded)", ["None found."], output_file)
+packages\views\editor\utils\preview.ts:88: // TODO(follow-up): extract to a JSON single-source-of-truth + generator
+server\internal\agenttmpl\templates\frontend-builder.json:4: "description": "Builds polished frontend UI with design-system fidelity, accessibility, and complete working code — no TODO stubs.",
+server\internal\agenttmpl\templates\frontend-builder.json:8: "instructions": "You build production-quality frontend UI. Default behaviours:\n\n1. **Treat design specs as binding contracts.** Respect spacing, typography, hover/focus/disabled states, motion. If the spec is ambiguous, ask one targeted clarifying question rather than inventing a decision silently.\n2. **Use the attached frontend-design skill as your style source of truth.** If a token exists for what you need (color, radius, spacing, type scale), use the token. Ad-hoc hex / pixel values are a smell.\n3. **Accessibility is non-negotiable.** Semantic HTML by default. Keyboard navigation works without a mouse. ARIA only when semantics are insufficient. Contrast ≥ 4.5:1 for body text. Focus-visible states are always visible.\n4. **Performance is a feature.** Avoid unnecessary client components, large client-side libraries, dependent-fetch waterfalls. Server components by default; client where interactivity demands it.\n5. **Ship complete UI.** No TODO placeholders, no `console.log`, no \"hook this up later\" stubs. Empty states, error states, loading states all exist. Edge cases (long text truncation, no data, slow network) are handled.\n6. **Use the web-artifacts-builder skill** when the deliverable is a self-contained React + Tailwind + shadcn artifact (one-pager, landing, dashboard preview).\n\nOutput shape per task:\n- The component code (one file per component, named clearly)\n- A short note on which tokens / primitives you used\n- A list of states implemented (default / hover / focus / disabled / loading / empty / error)\n- Any decision the spec didn't cover — explicitly flagged so the designer can override\n\nDo NOT: invent design decisions silently (ask one question, or flag the assumption); use raw hex colors when a token exists; ship code that white-screens on missing data; introduce a new dependency for something a 20-line component can do; mix concerns in one component — pull the data-fetch out from the presentational shell.",
+server\internal\handler\file.go:467: // TODO(follow-up): extract this list to a JSON single-source-of-truth and
+server\internal\handler\label.go:93: // TODO(labels): consider restricting to a charset that excludes newlines,
+server\internal\middleware\workspace.go:98: // TODO: cache slug→UUID lookup (slug is immutable, safe to cache with short TTL)
+server\pkg\agent\kiro.go:270: // TODO: drop one field once Kiro lands on a single canonical payload.
+
+=== GIT RECENT COMMITS (last 20) ===
+4c4695f3 chore: add local production deployment
+951b7701 feat:添加常用skill
+7bd05855 Add local production deployment support
+380c6b51 feat(usage): add Time and Tasks to daily-trend toggle (MUL-2283) (#2709)
+0079a734 fix(views): narrow agent/squad create dialogs to max-w-2xl (#2706)
+3698fd85 feat(views): show Total in daily token/cost chart tooltips (MUL-2282) (#2704)
+d43961ed MUL-2284 fix(deps): bump Next.js to patch CVE-2026-44578 (#2690)
+bfe9bf3e feat(daemon): force-stop hung agent runs via idle watchdog (MUL-2281) (#2691)
+8e881563 Add assignee grouping for issue boards (#2693)
+d8635ad5 fix(issues): prevent duplicate active issue creation (MUL-2225) (#2602)
+fcd13aec feat(daemon): auto-update CLI when idle (MUL-2100) (#2679)
+57be6951 feat(views): progressive disclosure for issue sidebar properties (MUL-2275) (#2675)
+f64d182f fix(views): narrow agent/squad create dialogs from max-w-5xl to max-w-4xl (#2688)
+2d21f525 docs: add May 15 changelog entry (#2682)
+5ad1641b Revert "Squad archive dialog + role editor + transactional DeleteSquad (#2680)" (#2687)
+1cb926d5 feat(views): refine navigation progress bar with brand color and glow (MUL-2269) (#2681)
+2980ead4 Squad archive dialog + role editor + transactional DeleteSquad (#2680)
+e8d6c912 feat(views): prefetch + transition + skeleton for snappy web navigation (MUL-2269) (#2677)
+319b23eb Revert "feat(task): add claim lease mechanism (Phase 2, MUL-2246) (#2660)" (#2674)
+b7a58c06 Revert "feat(task): wire claim lease into TaskService and sweeper (MUL-2246) …" (#2673)
+
+=== HIGH-CHURN FILES (last 90 days, top 20) ===
+ 122 server/internal/daemon/daemon.go
+ 121 server/cmd/server/router.go
+  94 server/internal/handler/daemon.go
+  83 server/internal/handler/issue.go
+  78 server/internal/service/task.go
+  75 packages/core/api/client.ts
+  71 packages/views/issues/components/issue-detail.tsx
+  69 server/internal/handler/comment.go
+  69 apps/web/features/issues/components/issue-detail.tsx
+  68 server/pkg/db/generated/models.go
+  67 server/internal/daemon/execenv/runtime_config.go
+  66 pnpm-lock.yaml
+  64 server/internal/handler/agent.go
+  56 apps/web/features/landing/i18n/en.ts
+  55 apps/web/features/landing/i18n/zh.ts
+  50 server/pkg/db/generated/agent.sql.go
+  50 server/internal/daemon/execenv/execenv_test.go
+  49 server/pkg/db/queries/agent.sql
+  48 README.md
+  45 apps/web/app/(dashboard)/agents/page.tsx
+
+=== MONOREPO SIGNALS ===
+Monorepo tool detected: pnpm-workspace.yaml
+Monorepo tool detected: turbo.json
+Sub-package directory found: packages/
+Sub-package directory found: apps/
+
+=== CODE METRICS ===
+Total files scanned: 1769
+Total lines of code: 251493
+
+Files by language:
+  Other: 597
+  TypeScript/React: 424
+  TypeScript: 393
+  Go: 349
+  JavaScript: 5
+  Python: 1
+
+Top 10 largest files:
+apps\web\public\images\feature-bg.jpg: 2189.5KB
+apps\web\public\images\feature-bg-3.jpg: 2089.0KB
+apps\web\public\images\feature-bg-2.jpg: 1800.5KB
+apps\web\public\images\feature-bg-4.jpg: 1378.8KB
+apps\web\public\images\landing-hero.png: 1073.1KB
+apps\web\public\images\landing-bg.jpg: 1060.8KB
+apps\desktop\resources\icon.png: 734.8KB
+pnpm-lock.yaml: 529.9KB
+docs\assets\hero-screenshot.png: 343.6KB
+docs\assets\banner.jpg: 201.1KB
+
+=== CI/CD PIPELINES ===
+CI/CD: GitHub Actions
+
+=== CONTAINERS & ORCHESTRATION ===
+Container: Docker found
+Orchestration: Docker Compose found
+
+=== SECURITY & COMPLIANCE ===
+No security configs detected.
+
+=== PERFORMANCE & TESTING ===
+No performance testing configs detected.
+
+=== SCAN COMPLETE ===

@@ -2315,6 +2315,15 @@ func (d *Daemon) runTask(ctx context.Context, task Task, provider string, slot i
 		return TaskResult{}, fmt.Errorf("create agent backend: %w", err)
 	}
 
+	if task.Agent != nil && len(task.Agent.FallbackModels) > 0 {
+		backend = agent.WithModelFallback(
+			backend,
+			task.Agent.Model,
+			task.Agent.FallbackModels,
+			taskLog,
+		)
+	}
+
 	reused := task.PriorWorkDir != "" && env.WorkDir == task.PriorWorkDir
 	taskLog.Info("starting agent",
 		"provider", provider,

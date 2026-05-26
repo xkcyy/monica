@@ -135,6 +135,8 @@
     "prop_owner": "Owner",
     "prop_created": "Created",
     "prop_updated": "Updated",
+    "prop_fallback_models": "Fallback Models",
+    "prop_fallback_models_empty": "No fallback models",
     "no_description_placeholder": "No description",
     "change_avatar_aria": "Change avatar",
     "avatar_updated_toast": "Avatar updated",
@@ -399,5 +401,15 @@
     "runtime_offline": "Daemon offline",
     "runtime_recovery": "Daemon restarted",
     "manual": "Cancelled by user"
+  },
+  "fallback_models": {
+    "add": "Add",
+    "max_reached": "Maximum {{count}} fallback models supported",
+    "add_dialog_title": "Add Fallback Model",
+    "add_dialog_description": "Select a fallback model. When the primary model fails, these models will be tried in order.",
+    "add_dialog_search_placeholder": "Search or enter model ID",
+    "add_dialog_empty": "No available models",
+    "add_dialog_cancel": "Cancel",
+    "add_dialog_confirm": "Add"
   }
 }

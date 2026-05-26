@@ -131,6 +131,8 @@
     "prop_owner": "所有者",
     "prop_created": "创建时间",
     "prop_updated": "更新时间",
+    "prop_fallback_models": "降级模型",
+    "prop_fallback_models_empty": "暂无降级模型",
     "no_description_placeholder": "暂无描述",
     "change_avatar_aria": "更换头像",
     "avatar_updated_toast": "已更新头像",
@@ -389,5 +391,15 @@
     "runtime_offline": "守护进程离线",
     "runtime_recovery": "守护进程已重启",
     "manual": "用户取消"
+  },
+  "fallback_models": {
+    "add": "添加",
+    "max_reached": "最多支持 {{count}} 个降级模型",
+    "add_dialog_title": "添加降级模型",
+    "add_dialog_description": "选择一个降级模型。当主模型执行失败时，会按顺序尝试这些模型。",
+    "add_dialog_search_placeholder": "搜索或输入模型 ID",
+    "add_dialog_empty": "暂无可用模型",
+    "add_dialog_cancel": "取消",
+    "add_dialog_confirm": "添加"
   }
 }

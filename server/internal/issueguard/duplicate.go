@@ -61,10 +61,10 @@ func LockAndFindActiveDuplicate(
 	}
 
 	duplicate, err := q.FindActiveDuplicateIssue(ctx, db.FindActiveDuplicateIssueParams{
-		WorkspaceID:     workspaceID,
-		ProjectID:       projectID,
-		ParentIssueID:   parentIssueID,
-		NormalizedTitle: normalizedTitle,
+		WorkspaceID: workspaceID,
+		Column2:     projectID,
+		Column3:     parentIssueID,
+		Title:       normalizedTitle,
 	})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -78,9 +78,9 @@ func LockAndFindActiveDuplicate(
 func lockKey(workspaceID, projectID, parentIssueID pgtype.UUID, normalizedTitle string) string {
 	return strings.Join([]string{
 		"issue-active-duplicate",
-		util.UUIDToString(workspaceID),
-		util.UUIDToString(projectID),
-		util.UUIDToString(parentIssueID),
+		workspaceID.String(),
+		projectID.String(),
+		parentIssueID.String(),
 		normalizedTitle,
-	}, "|")
+	}, ":")
 }

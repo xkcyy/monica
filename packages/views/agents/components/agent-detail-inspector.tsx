@@ -40,6 +40,7 @@ import { availabilityConfig } from "../presence";
 import { CharCounter } from "./char-counter";
 import { useT } from "../../i18n";
 import { ConcurrencyPicker } from "./inspector/concurrency-picker";
+import { FallbackModelsEditor } from "./inspector/fallback-models-editor";
 import { ModelPicker } from "./inspector/model-picker";
 import { RuntimePicker } from "./inspector/runtime-picker";
 import { SkillAttach } from "./inspector/skill-attach";
@@ -128,6 +129,16 @@ export function AgentDetailInspector({
             value={agent.model ?? ""}
             canEdit={canEdit}
             onChange={(m) => update({ model: m })}
+          />
+        </PropRow>
+        <PropRow label={t(($) => $.inspector.prop_fallback_models)} interactive={false}>
+          <FallbackModelsEditor
+            runtimeId={agent.runtime_id}
+            runtimeOnline={!!isOnline}
+            primaryModel={agent.model ?? ""}
+            value={agent.fallback_models ?? []}
+            canEdit={canEdit}
+            onChange={(models) => update({ fallback_models: models })}
           />
         </PropRow>
         <PropRow label={t(($) => $.inspector.prop_visibility)} interactive={false}>

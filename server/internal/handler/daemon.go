@@ -1085,15 +1085,22 @@ func (h *Handler) ClaimTaskByRuntime(w http.ResponseWriter, r *http.Request) {
 		if agent.McpConfig != nil {
 			mcpConfig = json.RawMessage(agent.McpConfig)
 		}
+		var fallbackModels []string
+		if agent.FallbackModels != nil {
+			if err := json.Unmarshal(agent.FallbackModels, &fallbackModels); err != nil {
+				slog.Warn("failed to unmarshal agent fallback_models", "agent_id", uuidToString(agent.ID), "error", err)
+			}
+		}
 		resp.Agent = &TaskAgentData{
-			ID:           uuidToString(agent.ID),
-			Name:         agent.Name,
-			Instructions: agent.Instructions,
-			Skills:       skills,
-			CustomEnv:    customEnv,
-			CustomArgs:   customArgs,
-			McpConfig:    mcpConfig,
-			Model:        agent.Model.String,
+			ID:             uuidToString(agent.ID),
+			Name:           agent.Name,
+			Instructions:   agent.Instructions,
+			Skills:         skills,
+			CustomEnv:      customEnv,
+			CustomArgs:     customArgs,
+			McpConfig:      mcpConfig,
+			Model:          agent.Model.String,
+			FallbackModels: fallbackModels,
 		}
 	}
 

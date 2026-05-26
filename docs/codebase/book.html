@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深入浅出 Monica 源码解析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #8b5cf6;
+            --bg-color: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --code-bg: #0f172a;
+            --code-border: #334155;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav a.active {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: var(--primary-color);
+        }
+
+        .sidebar-nav .part-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 40px 60px;
+            max-width: 900px;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        li {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* Code Blocks */
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        code {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 14px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-primary);
+            background-color: var(--bg-card);
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        tr:hover td {
+            background-color: var(--bg-card-hover);
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-high {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .badge-medium {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .badge-low {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .badge-info {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: #6366f1;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 3px solid var(--primary-color);
+            padding-left: 16px;
+            margin: 16px 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Links */
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Anchors */
+        .anchor {
+            float: left;
+            margin-left: -20px;
+            padding-right: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        h2:hover .anchor, h3:hover .anchor, h4:hover .anchor {
+            opacity: 1;
+        }
+
+        /* Diagram Box */
+        .diagram {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 16px 0;
+            color: var(--text-secondary);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 4px;
+            background-color: var(--bg-card);
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+                padding: 30px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                height: auto;
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Monica 源码解析</div>
+                <div class="sidebar-subtitle">深入浅出 · 架构之道</div>
+            </div>
+            
+            <div class="sidebar-title">目录</div>
+            <ul class="sidebar-nav">
+                <li><span class="part-title">第一部分：开篇与背景</span></li>
+                <li><a href="#chapter1">第1章：Multica 是什么？</a></li>
+                <li><a href="#chapter2">第2章：开发环境搭建</a></li>
+                
+                <li><span class="part-title">第二部分：技术栈详解</span></li>
+                <li><a href="#chapter3">第3章：后端技术栈 - Go + Chi + sqlc</a></li>
+                <li><a href="#chapter4">第4章：前端技术栈 - React + Next.js + Zustand</a></li>
+                
+                <li><span class="part-title">第三部分：核心架构设计</span></li>
+                <li><a href="#chapter5">第5章：分层架构</a></li>
+                <li><a href="#chapter6">第6章：实时通信</a></li>
+                <li><a href="#chapter7">第7章：Agent 运行时</a></li>
+                
+                <li><span class="part-title">第四部分：关键模块解析</span></li>
+                <li><a href="#chapter8">第8章：认证与会话管理</a></li>
+                <li><a href="#chapter9">第9章：Issue 管理与评论系统</a></li>
+                <li><a href="#chapter10">第10章：文件存储与附件系统</a></li>
+                
+                <li><span class="part-title">第五部分：工程实践</span></li>
+                <li><a href="#chapter11">第11章：代码规范与质量保障</a></li>
+                <li><a href="#chapter12">第12章：测试策略与自动化</a></li>
+                <li><a href="#chapter13">第13章：部署与运维</a></li>
+                
+                <li><span class="part-title">第六部分：附录</span></li>
+                <li><a href="#chapter14">第14章：源码阅读路线图</a></li>
+                <li><a href="#chapter15">第15章：常见问题与解决方案</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Book Header -->
+            <header>
+                <h1>深入浅出 Monica 源码解析</h1>
+                <p style="font-size: 16px; color: var(--text-secondary);">副标题：构建 AI-Native 任务管理平台的架构之道</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+            </header>
+
+            <!-- Book Overview -->
+            <div class="card">
+                <div class="card-title">📚 书籍概述</div>
+                <h4>目标读者</h4>
+                <ul>
+                    <li>想了解如何构建 AI Agent 平台的开发者</li>
+                    <li>对现代全栈架构感兴趣的工程师</li>
+                    <li>希望学习 Go + React/Next.js 实战经验的程序员</li>
+                    <li>需要定制化 Monica 系统的团队</li>
+                </ul>
+                <h4>阅读前置</h4>
+                <ul>
+                    <li>熟悉至少一门后端语言（Go/Java/Node.js）</li>
+                    <li>了解基本的 Web 开发概念（HTTP、REST API、WebSocket）</li>
+                    <li>有基本的数据库知识（SQL、事务）</li>
+                </ul>
+                <h4>学习路径</h4>
+                <p>书籍按照"概念→技术→架构→源码→最佳实践"的递进顺序组织。</p>
+            </div>
+
+            <!-- Chapter 1 -->
+            <h2 id="chapter1"><a href="#chapter1" class="anchor">§</a> 第一部分：开篇与背景</h2>
+            <h3>第1章：Multica 是什么？</h3>
+            <p><strong>目标</strong>：建立对 Monica 系统的整体认知，理解它解决什么问题</p>
+
+            <h4>1.1 AI-Native 时代的软件开发</h4>
+            <p>传统软件开发模式正面临新的挑战。随着 AI Agent 技术的发展，开发者不再是唯一的代码创造者。AI 可以协助编写代码、调试程序、甚至自主完成完整的开发任务。这带来了新的工作方式，但也带来了新的管理挑战。</p>
+            <ul>
+                <li><strong>传统模式的局限性</strong>：单线程工作、上下文切换成本高、知识难以复用</li>
+                <li><strong>AI Agent 的改变</strong>：并行执行、24/7 工作、技能累积</li>
+                <li><strong>管理平台的必要性</strong>：协调多个 Agent、追踪进度、处理阻塞</li>
+            </ul>
+
+            <h4>1.2 Multica 的核心理念</h4>
+            <p>Multica 的核心理念是<strong>"AI as Teammate"</strong> —— 将 AI Agent 视为团队的一员，而不是工具。</p>
+            <ul>
+                <li><strong>Agent 作为队友</strong>：可以分配任务、创建 issue、发表评论、报告进度</li>
+                <li><strong>Squad 机制</strong>：将多个 Agent 组织成团队，由 Leader Agent 进行任务分配</li>
+                <li><strong>技能复用</strong>：每个解决方案都成为团队可复用的技能</li>
+            </ul>
+
+            <h4>1.3 支持的 Agent 类型</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent 类型</th>
+                        <th>类型</th>
+                        <th>支持状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Claude Code</td>
+                        <td>官方 CLI</td>
+                        <td><span class="badge badge-info">支持</span></td>
+                    </tr>
+                    <tr>
+                        <td>Codex</td>
+                        <td>OpenAI CLI</td>
+                        <td><span class="badge badge-info">支持</span></td>
+                    </tr>
+                    <tr>
+                        <td>GitHub Copilot CLI</td>
+                        <td>GitHub CLI</td>
+                        <td><span class="badge badge-info">支持</span></td>
+                    </tr>
+                    <tr>
+                        <td>OpenClaw / OpenCode</td>
+                        <td>开源 CLI</td>
+                        <td><span class="badge badge-info">支持</span></td>
+                    </tr>
+                    <tr>
+                        <td>Gemini / Pi / Kimi</td>
+                        <td>第三方 CLI</td>
+                        <td><span class="badge badge-info">支持</span></td>
+                    </tr>
+                    <tr>
+                        <td>Kiro CLI</td>
+                        <td>第三方 CLI</td>
+                        <td><span class="badge badge-info">支持</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>1.4 系统全景图</h4>
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        Multica 系统架构                               │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│   ┌──────────────────┐      HTTP/WebSocket      ┌──────────────────┐  │
+│   │   Web Frontend   │ ←──────────────────────→ │   Go Backend     │  │
+│   │   (Next.js)      │                          │   (Chi + sqlc)   │  │
+│   └────────┬─────────┘                          └────────┬─────────┘  │
+│            │                                            │            │
+│            │                                            │            │
+│   ┌────────┴─────────┐                          ┌────────┴─────────┐  │
+│   │  Desktop App     │                          │    PostgreSQL    │  │
+│   │   (Electron)     │                          │   (pgvector)     │  │
+│   └──────────────────┘                          └──────────────────┘  │
+│                                                                      │
+│                          ┌──────────────────┐                        │
+│                          │  Agent Daemon    │                        │
+│                          │  (Local Runtime) │                        │
+│                          │  Claude/Codex/...│                        │
+│                          └──────────────────┘                        │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────────┘
+            </div>
+
+            <div class="card">
+                <div class="card-title">📝 实践建议</div>
+                <p>安装 Monica，体验创建 Issue、分配给 Agent、观察 Agent 自动执行的完整流程。</p>
+            </div>
+
+            <!-- Chapter 2 -->
+            <h3 id="chapter2"><a href="#chapter2" class="anchor">§</a> 第2章：开发环境搭建</h3>
+            <p><strong>目标</strong>：让读者能够本地运行 Monica 系统</p>
+
+            <h4>2.1 依赖清单</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>依赖</th>
+                        <th>版本要求</th>
+                        <th>用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Go</td>
+                        <td>1.26+</td>
+                        <td>后端服务</td>
+                    </tr>
+                    <tr>
+                        <td>Node.js</td>
+                        <td>20+</td>
+                        <td>前端开发</td>
+                    </tr>
+                    <tr>
+                        <td>pnpm</td>
+                        <td>10.28+</td>
+                        <td>包管理器</td>
+                    </tr>
+                    <tr>
+                        <td>Docker</td>
+                        <td>最新</td>
+                        <td>数据库容器</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>2.2 一键启动</h4>
+            <p>Monica 提供了便捷的开发环境启动命令：</p>
+            <pre><code># 一键启动开发环境
+make dev
+
+# 该命令会自动完成：
+# 1. 检测主 checkout 或 worktree
+# 2. 创建环境文件 (.env 或 .env.worktree)
+# 3. 启动 PostgreSQL 容器
+# 4. 运行数据库迁移
+# 5. 启动后端和前端服务</code></pre>
+
+            <h4>2.3 环境变量说明</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>变量名</th>
+                        <th>说明</th>
+                        <th>默认值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>DATABASE_URL</td>
+                        <td>数据库连接字符串</td>
+                        <td>postgres://multica:multica@localhost:5432/multica</td>
+                    </tr>
+                    <tr>
+                        <td>PORT</td>
+                        <td>后端端口</td>
+                        <td>8080</td>
+                    </tr>
+                    <tr>
+                        <td>FRONTEND_PORT</td>
+                        <td>前端端口</td>
+                        <td>3000</td>
+                    </tr>
+                    <tr>
+                        <td>JWT_SECRET</td>
+                        <td>JWT 签名密钥</td>
+                        <td>change-me-in-production</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>2.4 开发工具链</h4>
+            <pre><code># 类型检查
+pnpm typecheck
+
+# 运行测试
+pnpm test
+
+# Go 格式化
+cd server && go fmt ./...
+
+# Go 静态检查
+cd server && go vet ./...
+
+# 完整验证
+make check</code></pre>
+
+            <div class="card">
+                <div class="card-title">💡 常见问题</div>
+                <ul>
+                    <li><strong>Docker 容器启动失败</strong>：检查 Docker Desktop 是否运行，端口 5432 是否被占用</li>
+                    <li><strong>端口冲突</strong>：使用 git worktree 创建独立环境，自动分配不同端口</li>
+                    <li><strong>数据库迁移失败</strong>：确保数据库已创建，运行 `make db-reset` 重置数据库</li>
+                </ul>
+            </div>
+
+            <!-- Chapter 3 -->
+            <h2 id="chapter3"><a href="#chapter3" class="anchor">§</a> 第二部分：技术栈详解</h2>
+            <h3>第3章：后端技术栈 - Go + Chi + sqlc</h3>
+            <p><strong>目标</strong>：理解 Monica 后端选择 Go 的原因，以及关键框架的使用</p>
+
+            <h4>3.1 为什么选择 Go</h4>
+            <ul>
+                <li><strong>编译型性能</strong>：编译成机器码，启动快、执行快，适合高并发场景</li>
+                <li><strong>并发模型</strong>：Goroutine + Channel 提供轻量级并发，适合处理大量 Agent 任务</li>
+                <li><strong>标准库丰富</strong>：内置 HTTP、JSON、加密等功能，减少第三方依赖</li>
+                <li><strong>错误处理</strong>：显式错误返回，避免隐藏的运行时异常</li>
+            </ul>
+
+            <h4>3.2 Chi 路由框架</h4>
+            <p>Chi 是一个轻量级、高性能的 HTTP 路由框架，设计理念是"少即是多"。</p>
+            <pre><code>// server/cmd/server/router.go - 路由配置示例
+func NewRouter(pool *pgxpool.Pool, hub *realtime.Hub, ...) chi.Router {
+    r := chi.NewRouter()
+    
+    // 全局中间件
+    r.Use(chimw.RequestID)
+    r.Use(middleware.ClientMetadata)
+    
+    // API 路由组
+    r.Route("/api", func(r chi.Router) {
+        r.Use(middleware.RequireAuth)
+        r.Use(middleware.RequireWorkspace)
+        
+        r.Get("/issues", h.ListIssues)
+        r.Post("/issues", h.CreateIssue)
+        // ...
+    })
+    
+    return r
+}</code></pre>
+
+            <h4>3.3 sqlc - 类型安全的 SQL</h4>
+            <p>sqlc 是一个从 SQL 生成类型化 Go 代码的工具，它直接将 SQL 查询转换为类型安全的函数。</p>
+            <pre><code>-- server/pkg/db/queries/issue.sql - sqlc 查询定义
+-- name: GetIssue :one
+SELECT id, title, description, status, priority, 
+       assignee_type, assignee_id, workspace_id,
+       created_at, updated_at
+FROM issues 
+WHERE id = $1;
+
+-- name: CreateIssue :one
+INSERT INTO issues (
+    id, workspace_id, title, description, 
+    status, priority, assignee_type, assignee_id
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7, $8
+) RETURNING *;</code></pre>
+
+            <p>sqlc 会自动生成对应的 Go 代码：</p>
+            <pre><code>// sqlc 生成的代码示例（简化）
+type GetIssueParams struct {
+    ID uuid.UUID
+}
+
+type Issue struct {
+    ID          uuid.UUID
+    Title       string
+    Description sql.NullString
+    Status      string
+    // ...
+}
+
+func (q *Queries) GetIssue(ctx context.Context, params GetIssueParams) (Issue, error)
+func (q *Queries) CreateIssue(ctx context.Context, params CreateIssueParams) (Issue, error)</code></pre>
+
+            <div class="card">
+                <div class="card-title">📊 sqlc vs ORM 对比</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>维度</th>
+                            <th>sqlc</th>
+                            <th>GORM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>类型安全</td>
+                            <td>编译时检查</td>
+                            <td>运行时检查</td>
+                        </tr>
+                        <tr>
+                            <td>性能</td>
+                            <td>原生 SQL，无额外开销</td>
+                            <td>有 ORM 层开销</td>
+                        </tr>
+                        <tr>
+                            <td>灵活性</td>
+                            <td>完全控制 SQL</td>
+                            <td>受限于 ORM API</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chapter 4 -->
+            <h3 id="chapter4"><a href="#chapter4" class="anchor">§</a> 第4章：前端技术栈 - React + Next.js + Zustand</h3>
+            <p><strong>目标</strong>：掌握 Monica 前端架构的核心设计</p>
+
+            <h4>4.1 Monorepo 架构</h4>
+            <p>Monica 采用 pnpm workspaces + Turborepo 构建 monorepo，包含以下包：</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>包</th>
+                        <th>职责</th>
+                        <th>约束</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>packages/core</td>
+                        <td>无头业务逻辑、API Client、Stores</td>
+                        <td>零 react-dom、零 localStorage</td>
+                    </tr>
+                    <tr>
+                        <td>packages/ui</td>
+                        <td>原子 UI 组件</td>
+                        <td>零业务逻辑</td>
+                    </tr>
+                    <tr>
+                        <td>packages/views</td>
+                        <td>共享业务视图</td>
+                        <td>零 next/*、零 react-router</td>
+                    </tr>
+                    <tr>
+                        <td>apps/web</td>
+                        <td>Next.js Web 应用</td>
+                        <td>平台特定代码</td>
+                    </tr>
+                    <tr>
+                        <td>apps/desktop</td>
+                        <td>Electron 桌面应用</td>
+                        <td>平台特定代码</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>4.2 状态管理：React Query + Zustand</h4>
+            <p>Monica 采用严格的状态分离策略：</p>
+            <ul>
+                <li><strong>React Query</strong>：管理所有服务器状态（issues、users、workspaces）</li>
+                <li><strong>Zustand</strong>：管理所有客户端状态（UI selections、filters、modal state）</li>
+            </ul>
+
+            <pre><code>// packages/core/api/client.ts - API 客户端设计
+export class ApiClient {
+  async getIssues(params: ListIssuesParams): Promise<ListIssuesResponse> {
+    const response = await this.request('/api/issues', { params });
+    return parseWithFallback(
+      response, 
+      ListIssuesResponseSchema, 
+      EMPTY_LIST_ISSUES_RESPONSE
+    );
+  }
+}</code></pre>
+
+            <pre><code>// packages/core/stores/workspace-store.ts - Zustand Store
+export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
+  currentWorkspace: null,
+  setCurrentWorkspace: (slug, id) => 
+    set({ currentWorkspace: { slug, id } }),
+  
+  // 响应式选择器示例
+  currentWorkspaceId: (state) => state.currentWorkspace?.id,
+}));</code></pre>
+
+            <h4>4.3 跨平台开发</h4>
+            <p>Monica 通过 <code>NavigationAdapter</code> 抽象实现 Web 和 Electron 的统一路由：</p>
+            <pre><code>// packages/core/platform/navigation.ts
+export interface NavigationAdapter {
+  push(path: string): void;
+  replace(path: string): void;
+  back(): void;
+  href(path: string): string;
+}
+
+// Web 实现（Next.js）
+export const WebNavigationAdapter: NavigationAdapter = {
+  push: (path) => router.push(path),
+  href: (path) => path,
+  // ...
+};
+
+// Desktop 实现（react-router-dom）
+export const DesktopNavigationAdapter: NavigationAdapter = {
+  push: (path) => history.push(path),
+  href: (path) => path,
+  // ...
+};</code></pre>
+
+            <!-- Chapter 5 -->
+            <h2 id="chapter5"><a href="#chapter5" class="anchor">§</a> 第三部分：核心架构设计</h2>
+            <h3>第5章：分层架构 - Router → Handler → Service → DB</h3>
+            <p><strong>目标</strong>：理解 Monica 后端的核心分层模式</p>
+
+            <h4>5.1 四层架构概览</h4>
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                      HTTP 请求                                  │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Router (路由层)                                               │
+│  • 路由配置                                                     │
+│  • 中间件组合                                                   │
+│  • 请求分发                                                     │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Handler (处理层)                                               │
+│  • HTTP 协议边界                                                │
+│  • 请求参数解析                                                 │
+│  • 响应构建                                                     │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Service (业务层)                                               │
+│  • 业务逻辑编排                                                 │
+│  • 事务管理                                                     │
+│  • 事件发布                                                     │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  DB (数据层)                                                   │
+│  • sqlc 生成的类型化查询                                         │
+│  • 数据库操作                                                   │
+│  • 事务提交/回滚                                                │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+                    WebSocket 事件广播
+</div>
+
+            <h4>5.2 中间件设计</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>中间件</th>
+                        <th>职责</th>
+                        <th>位置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>RequestID</td>
+                        <td>为每个请求生成唯一 ID</td>
+                        <td>全局</td>
+                    </tr>
+                    <tr>
+                        <td>RequireAuth</td>
+                        <td>验证 JWT Token</td>
+                        <td>API 路由</td>
+                    </tr>
+                    <tr>
+                        <td>RequireWorkspace</td>
+                        <td>注入工作区上下文</td>
+                        <td>工作区路由</td>
+                    </tr>
+                    <tr>
+                        <td>ClientMetadata</td>
+                        <td>记录客户端信息</td>
+                        <td>全局</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>5.3 请求生命周期示例：创建 Issue</h4>
+            <pre><code>// 1. Router: POST /api/issues → RequireAuth + RequireWorkspace
+// 2. Handler: ParseCreateIssueRequest → Call service.CreateIssue
+// 3. Service: 执行业务逻辑（权限检查、默认值、事件发布）
+// 4. DB: INSERT into issues
+// 5. 发布事件: issue.created
+// 6. WebSocket 广播给订阅者</code></pre>
+
+            <!-- Chapter 6 -->
+            <h3 id="chapter6"><a href="#chapter6" class="anchor">§</a> 第6章：实时通信 - WebSocket + Redis 中继</h3>
+            <p><strong>目标</strong>：理解 Monica 如何实现 Agent 任务的实时状态推送</p>
+
+            <h4>6.1 WebSocket Hub 架构</h4>
+            <p>Monica 使用 gorilla/websocket 实现 WebSocket 通信，支持两种模式：</p>
+            <ul>
+                <li><strong>单节点模式</strong>：内存 Hub，适合开发和小型部署</li>
+                <li><strong>多节点模式</strong>：Redis 中继，支持水平扩展</li>
+            </ul>
+
+            <pre><code>// server/internal/realtime/hub.go - Hub 核心结构
+type Hub struct {
+    clients    map[*Client]map[string]bool  // client -> subscribed rooms
+    rooms      map[string]map[*Client]bool  // room -> subscribed clients
+    register   chan *Client
+    unregister chan *Client
+    broadcast  chan *Message
+}
+
+func (h *Hub) Run() {
+    for {
+        select {
+        case client := <-h.register:
+            // 处理客户端注册
+            h.registerClient(client)
+        case client := <-h.unregister:
+            // 处理客户端注销
+            h.unregisterClient(client)
+        case msg := <-h.broadcast:
+            // 广播消息到房间
+            h.broadcastToRoom(msg)
+        }
+    }
+}</code></pre>
+
+            <h4>6.2 事件类型</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>事件前缀</th>
+                        <th>说明</th>
+                        <th>示例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>workspace/*</td>
+                        <td>工作区事件</td>
+                        <td>workspace.member_added</td>
+                    </tr>
+                    <tr>
+                        <td>user/*</td>
+                        <td>用户事件</td>
+                        <td>user.status_changed</td>
+                    </tr>
+                    <tr>
+                        <td>task/*</td>
+                        <td>任务状态变更</td>
+                        <td>task.progress_updated</td>
+                    </tr>
+                    <tr>
+                        <td>chat/*</td>
+                        <td>聊天消息</td>
+                        <td>chat.message_created</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Chapter 7 -->
+            <h3 id="chapter7"><a href="#chapter7" class="anchor">§</a> 第7章：Agent 运行时 - Daemon 与任务调度</h3>
+            <p><strong>目标</strong>：理解 Monica 如何与各种 Agent CLI 集成</p>
+
+            <h4>7.1 Daemon 架构</h4>
+            <div class="diagram">
+┌──────────────┐      WebSocket       ┌──────────────────┐
+│ Local Daemon │ ←───────────────────→ │  Backend Server  │
+│   (CLI)      │                      │                  │
+│  ┌─────────┐ │                      └────────┬─────────┘
+│  │Claude   │ │                               │
+│  │Codex    │ │                               │ 持久化
+│  │Copilot  │ │                               ↓
+│  └─────────┘ │                      ┌──────────────────┐
+└──────┬───────┘                       │   PostgreSQL     │
+       │                               │   (状态存储)      │
+       │ 执行命令                       └──────────────────┘
+       ↓
+┌──────────────┐
+│ Agent Task   │
+│ Execution    │
+└──────────────┘
+</div>
+
+            <h4>7.2 Agent Adapter 模式</h4>
+            <p>Monica 通过 Adapter 模式统一不同 Agent CLI 的接口：</p>
+            <pre><code>// server/pkg/agent/agent.go - 统一接口
+type Agent interface {
+    Execute(ctx context.Context, task Task) (<-chan TaskMessage, error)
+    Name() string
+    Version() string
+    AvailableModels() []string
+}
+
+// server/pkg/agent/claude_code.go - Claude Code 适配器
+type ClaudeCodeAgent struct {
+    binaryPath string
+}
+
+func (a *ClaudeCodeAgent) Execute(ctx context.Context, task Task) (<-chan TaskMessage, error) {
+    // 执行 claude code 命令
+    cmd := exec.CommandContext(ctx, a.binaryPath, "task", task.Prompt)
+    // ...
+}</code></pre>
+
+            <h4>7.3 任务生命周期</h4>
+            <pre><code>┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
+│ enqueue  │───→│  claim   │───→│  start   │───→│ progress │
+└──────────┘    └──────────┘    └──────────┘    └─────┬────┘
+                                                      │
+                                    ┌─────────────────┴─────────────────┐
+                                    ↓                                   ↓
+                              ┌──────────┐                       ┌──────────┐
+                              │complete  │                       │  fail    │
+                              └──────────┘                       └──────────┘</code></pre>
+
+            <!-- Chapter 8 -->
+            <h2 id="chapter8"><a href="#chapter8" class="anchor">§</a> 第四部分：关键模块源码解析</h2>
+            <h3>第8章：认证与会话管理</h3>
+            <p><strong>目标</strong>：理解 Monica 的多因素认证和会话管理机制</p>
+
+            <h4>8.1 认证方式</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>认证方式</th>
+                        <th>流程</th>
+                        <th>适用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>邮箱验证码</td>
+                        <td>发送验证码 → 验证验证码 → 获取 JWT</td>
+                        <td>用户登录</td>
+                    </tr>
+                    <tr>
+                        <td>Google OAuth</td>
+                        <td>OAuth 授权 → 获取用户信息 → 创建/登录用户</td>
+                        <td>用户登录</td>
+                    </tr>
+                    <tr>
+                        <td>Personal Access Token</td>
+                        <td>创建 PAT → 使用 PAT 访问 API</td>
+                        <td>API 访问、CLI</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>8.2 JWT 结构</h4>
+            <pre><code>// server/internal/auth/jwt.go
+type Claims struct {
+    UserID      uuid.UUID `json:"user_id"`
+    WorkspaceID uuid.UUID `json:"workspace_id,omitempty"`
+    TokenType   string    `json:"token_type"` // "access" | "pat"
+    jwt.RegisteredClaims
+}
+
+// JWT 认证流程
+// 1. 登录验证 → 生成 JWT
+// 2. 请求携带 JWT → 中间件验证
+// 3. 解析 Claims → 注入工作区上下文</code></pre>
+
+            <!-- Chapter 9 -->
+            <h3 id="chapter9"><a href="#chapter9" class="anchor">§</a> 第9章：Issue 管理与评论系统</h3>
+            <p><strong>目标</strong>：理解 Monica 核心实体的数据模型和业务逻辑</p>
+
+            <h4>9.1 Issue 数据模型</h4>
+            <pre><code>-- issues 表核心结构
+CREATE TABLE issues (
+    id UUID PRIMARY KEY,
+    workspace_id UUID NOT NULL REFERENCES workspaces(id),
+    title TEXT NOT NULL,
+    description TEXT,
+    status TEXT NOT NULL DEFAULT 'backlog',
+    priority INTEGER DEFAULT 0,
+    assignee_type TEXT,       -- 'member' | 'agent' | 'squad'
+    assignee_id UUID,
+    parent_id UUID REFERENCES issues(id),
+    project_id UUID REFERENCES projects(id),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);</code></pre>
+
+            <h4>9.2 状态机与流转规则</h4>
+            <div class="diagram">
+    backlog
+        ↓
+    todo  ←──────────────┐
+        ↓                │
+    in_progress          │
+        ↓                │
+    review               │
+        ↓                │
+    done  ←──────────────┘
+        ↓
+    archived
+</div>
+
+            <h4>9.3 事件驱动设计</h4>
+            <p>Monica 使用事件总线模式处理跨模块通信：</p>
+            <pre><code>// server/internal/events/bus.go
+type Bus struct {
+    listeners map[string][]EventHandler
+}
+
+func (b *Bus) Subscribe(eventType string, handler EventHandler)
+func (b *Bus) Publish(event Event)
+
+// 事件类型示例
+const (
+    EventIssueCreated   = "issue.created"
+    EventIssueUpdated   = "issue.updated"
+    EventCommentCreated = "comment.created"
+    EventTaskCompleted  = "task.completed"
+)</code></pre>
+
+            <!-- Chapter 10 -->
+            <h3 id="chapter10"><a href="#chapter10" class="anchor">§</a> 第10章：文件存储与附件系统</h3>
+            <p><strong>目标</strong>：理解 Monica 的文件上传机制和存储抽象</p>
+
+            <h4>10.1 存储抽象层</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>存储后端</th>
+                        <th>配置方式</th>
+                        <th>适用场景</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>本地存储</td>
+                        <td>配置存储目录</td>
+                        <td>开发环境、自托管</td>
+                    </tr>
+                    <tr>
+                        <td>AWS S3</td>
+                        <td>配置 AWS 凭证</td>
+                        <td>生产环境、云部署</td>
+                    </tr>
+                    <tr>
+                        <td>CloudFront CDN</td>
+                        <td>配置 CDN 域名</td>
+                        <td>媒体文件加速</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <pre><code>// server/internal/storage/storage.go - 存储抽象接口
+type Storage interface {
+    Upload(ctx context.Context, key string, content []byte, contentType string) error
+    Download(ctx context.Context, key string) ([]byte, error)
+    Delete(ctx context.Context, key string) error
+    GetURL(ctx context.Context, key string) (string, error)
+}</code></pre>
+
+            <!-- Chapter 11 -->
+            <h2 id="chapter11"><a href="#chapter11" class="anchor">§</a> 第五部分：工程实践</h2>
+            <h3>第11章：代码规范与质量保障</h3>
+            <p><strong>目标</strong>：理解 Monica 的代码规范和强制执行机制</p>
+
+            <h4>11.1 命名约定</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>语言</th>
+                        <th>文件</th>
+                        <th>函数/方法</th>
+                        <th>类型/接口</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Go</td>
+                        <td>小写下划线</td>
+                        <td>PascalCase（公开）</td>
+                        <td>PascalCase</td>
+                    </tr>
+                    <tr>
+                        <td>TypeScript</td>
+                        <td>PascalCase/.tsx</td>
+                        <td>camelCase</td>
+                        <td>PascalCase</td>
+                    </tr>
+                    <tr>
+                        <td>React Hooks</td>
+                        <td>-</td>
+                        <td>use前缀 + camelCase</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>11.2 包边界规则</h4>
+            <ul>
+                <li><strong>packages/core</strong>：零 react-dom、零 localStorage、零 process.env</li>
+                <li><strong>packages/ui</strong>：零 @multica/core 导入（纯 UI）</li>
+                <li><strong>packages/views</strong>：零 next/*、零 react-router-dom</li>
+            </ul>
+
+            <h4>11.3 API 响应兼容性</h4>
+            <p>Monica 使用 Zod Schema 进行 API 响应验证，确保前端不会因为后端变更而崩溃：</p>
+            <pre><code>// packages/core/api/schema.ts
+export const IssueSchema = z.object({
+    id: z.string().uuid(),
+    title: z.string(),
+    status: z.enum(['backlog', 'todo', 'in_progress', 'review', 'done', 'archived']),
+    priority: z.number().int().optional(),
+    // 新字段必须可选，确保向后兼容
+    newField: z.string().optional(),
+});
+
+export const parseWithFallback = <T>(
+    data: unknown,
+    schema: ZodType<T>,
+    fallback: T
+): T => {
+    const result = schema.safeParse(data);
+    if (!result.success) {
+        console.warn('API response parsing failed:', result.error);
+        return fallback;
+    }
+    return result.data;
+};</code></pre>
+
+            <!-- Chapter 12 -->
+            <h3 id="chapter12"><a href="#chapter12" class="anchor">§</a> 第12章：测试策略与自动化</h3>
+            <p><strong>目标</strong>：理解 Monica 的多层次测试体系</p>
+
+            <h4>12.1 测试分层</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>测试类型</th>
+                        <th>框架</th>
+                        <th>目标</th>
+                        <th>运行位置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>单元测试</td>
+                        <td>Vitest</td>
+                        <td>Stores、hooks、工具函数</td>
+                        <td>packages/core</td>
+                    </tr>
+                    <tr>
+                        <td>组件测试</td>
+                        <td>Vitest + jsdom</td>
+                        <td>React 组件</td>
+                        <td>packages/views</td>
+                    </tr>
+                    <tr>
+                        <td>集成测试</td>
+                        <td>Go test</td>
+                        <td>Handlers、Services</td>
+                        <td>server/internal</td>
+                    </tr>
+                    <tr>
+                        <td>E2E 测试</td>
+                        <td>Playwright</td>
+                        <td>用户流程</td>
+                        <td>e2e/tests</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>12.2 Mock 策略示例</h4>
+            <pre><code>// packages/views/issues/components/issue-detail.test.tsx
+import { vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { useWorkspaceStore } from '@multica/core';
+
+// Mock Zustand Store
+vi.mock('@multica/core', () => ({
+    useWorkspaceStore: vi.fn(() => ({
+        currentWorkspace: { slug: 'test', id: 'test-uuid' },
+    })),
+}));
+
+it('renders issue title', async () => {
+    render(<IssueDetail issueId="issue-uuid" />);
+    expect(await screen.findByText('Test Issue')).toBeInTheDocument();
+});</code></pre>
+
+            <!-- Chapter 13 -->
+            <h3 id="chapter13"><a href="#chapter13" class="anchor">§</a> 第13章：部署与运维</h3>
+            <p><strong>目标</strong>：理解 Monica 的部署架构和运维实践</p>
+
+            <h4>13.1 Docker 部署</h4>
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                    Docker Compose                             │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────────┐  │
+│  │  Network: multica-network                              │  │
+│  └─────────────────────────────────────────────────────────┘  │
+│                              │                                │
+│          ┌───────────────────┼───────────────────┐            │
+│          ▼                   ▼                   ▼            │
+│  ┌───────────┐       ┌───────────┐       ┌───────────┐        │
+│  │  web      │       │  backend  │       │  postgres │        │
+│  │ (Next.js) │       │   (Go)    │       │           │        │
+│  └─────┬─────┘       └─────┬─────┘       └─────┬─────┘        │
+│        │                  │                    │              │
+│        │ HTTP             │                    │              │
+│        └──────────────────┘                    │              │
+│                           │                    │              │
+│                           │ PostgreSQL          │              │
+│                           └────────────────────┘              │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────────┐  │
+│  │  Volumes:                                              │  │
+│  │  - multica-postgres-data: /var/lib/postgresql/data    │  │
+│  │  - multica-uploads: /app/uploads                      │  │
+│  └─────────────────────────────────────────────────────────┘  │
+└───────────────────────────────────────────────────────────────┘
+</div>
+
+            <h4>13.2 自托管指南</h4>
+            <pre><code># 1. 下载并配置环境
+git clone https://github.com/multica-ai/multica.git
+cd multica
+cp .env.example .env
+
+# 2. 生成随机 JWT_SECRET
+openssl rand -hex 32
+
+# 3. 启动服务
+docker compose -f docker-compose.selfhost.yml up -d
+
+# 4. 配置 SMTP（可选）
+# 在 .env 中设置 SMTP_HOST、SMTP_USERNAME、SMTP_PASSWORD</code></pre>
+
+            <!-- Chapter 14 -->
+            <h2 id="chapter14"><a href="#chapter14" class="anchor">§</a> 第六部分：附录</h2>
+            <h3>第14章：源码阅读路线图</h3>
+
+            <h4>14.1 成为 Monica 贡献者</h4>
+            <p><strong>推荐阅读顺序：</strong></p>
+            <ol>
+                <li>README.md - 项目定位和快速入门</li>
+                <li>CONTRIBUTING.md - 贡献指南</li>
+                <li>docs/codebase/ARCHITECTURE.md - 架构总览</li>
+                <li>server/cmd/server/main.go - 后端入口</li>
+                <li>server/cmd/server/router.go - 路由配置</li>
+                <li>packages/core/api/client.ts - API 客户端</li>
+            </ol>
+
+            <h4>14.2 深度定制开发者</h4>
+            <ul>
+                <li><strong>自定义 Agent 适配器</strong>：参考 `server/pkg/agent/claude_code.go`</li>
+                <li><strong>扩展数据模型</strong>：修改 `server/pkg/db/queries/` 和迁移文件</li>
+                <li><strong>添加 WebSocket 事件</strong>：修改 `server/internal/events/bus.go`</li>
+            </ul>
+
+            <!-- Chapter 15 -->
+            <h3 id="chapter15"><a href="#chapter15" class="anchor">§</a> 第15章：常见问题与解决方案</h3>
+
+            <h4>15.1 开发环境问题</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>问题</th>
+                        <th>解决方案</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Docker 容器启动失败</td>
+                        <td>检查 Docker Desktop 是否运行，端口 5432 是否被占用</td>
+                    </tr>
+                    <tr>
+                        <td>端口冲突</td>
+                        <td>使用 `make worktree-env` 创建独立环境</td>
+                    </tr>
+                    <tr>
+                        <td>数据库迁移失败</td>
+                        <td>运行 `make db-reset` 重置数据库</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>15.2 调试技巧</h4>
+            <ul>
+                <li><strong>后端日志分析</strong>：查看 `slog` 输出，关注请求 ID</li>
+                <li><strong>前端调试</strong>：使用 React Query DevTools 查看缓存状态</li>
+                <li><strong>WebSocket 追踪</strong>：在浏览器开发者工具的 Network 面板查看 ws 消息</li>
+            </ul>
+
+            <!-- Book Conclusion -->
+            <h2>总结</h2>
+            <p>本书通过 Monica 这个真实的 AI-Native 任务管理平台，系统性地讲解了现代全栈应用的架构设计、源码实现和工程实践。读者不仅能理解 Monica 的"how"，更能领悟其"why"，从而在未来的架构设计中做出更好的决策。</p>
+
+            <div class="card">
+                <div class="card-title">🚀 下一步</div>
+                <ol>
+                    <li>从第一部分开始阅读，建立对系统的整体认知</li>
+                    <li>结合 <code>docs/codebase/</code> 中的技术文档深入学习</li>
+                    <li>在本地环境运行 Monica，边学边实践</li>
+                    <li>尝试修改代码、添加功能，加深理解</li>
+                </ol>
+            </div>
+
+            <!-- Footer -->
+            <footer style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 14px;">
+                <p>《深入浅出 Monica 源码解析》</p>
+                <p style="margin-top: 8px;">构建 AI-Native 任务管理平台的架构之道</p>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // 高亮当前导航
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            const currentPath = window.location.hash || '#chapter1';
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+                
+                link.addEventListener('click', () => {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    window.location.hash = this.getAttribute('href');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

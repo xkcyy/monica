@@ -130,6 +130,7 @@ export interface Agent {
   status: AgentStatus;
   max_concurrent_tasks: number;
   model: string;
+  fallback_models?: string[];
   owner_id: string | null;
   skills: AgentSkillSummary[];
   created_at: string;
@@ -251,6 +252,7 @@ export interface UpdateAgentRequest {
   status?: AgentStatus;
   max_concurrent_tasks?: number;
   model?: string;
+  fallback_models?: string[];
 }
 
 // Skills
