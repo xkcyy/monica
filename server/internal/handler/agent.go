@@ -51,6 +51,7 @@ type AgentResponse struct {
 	UpdatedAt          string              `json:"updated_at"`
 	ArchivedAt         *string             `json:"archived_at"`
 	ArchivedBy         *string             `json:"archived_by"`
+	FallbackModels     []string            `json:"fallback_models"`
 }
 
 func agentToResponse(a db.Agent) AgentResponse {
@@ -87,6 +88,16 @@ func agentToResponse(a db.Agent) AgentResponse {
 		mcpConfig = json.RawMessage(a.McpConfig)
 	}
 
+	var fallbackModels []string
+	if a.FallbackModels != nil {
+		if err := json.Unmarshal(a.FallbackModels, &fallbackModels); err != nil {
+			slog.Warn("failed to unmarshal agent fallback_models", "agent_id", uuidToString(a.ID), "error", err)
+		}
+	}
+	if fallbackModels == nil {
+		fallbackModels = []string{}
+	}
+
 	return AgentResponse{
 		ID:                 uuidToString(a.ID),
 		WorkspaceID:        uuidToString(a.WorkspaceID),
@@ -110,6 +121,7 @@ func agentToResponse(a db.Agent) AgentResponse {
 		UpdatedAt:          timestampToString(a.UpdatedAt),
 		ArchivedAt:         timestampToPtr(a.ArchivedAt),
 		ArchivedBy:         uuidToPtr(a.ArchivedBy),
+		FallbackModels:     fallbackModels,
 	}
 }
 
@@ -580,6 +592,7 @@ type UpdateAgentRequest struct {
 	Status             *string            `json:"status"`
 	MaxConcurrentTasks *int32             `json:"max_concurrent_tasks"`
 	Model              *string            `json:"model"`
+	FallbackModels     *[]string          `json:"fallback_models"`
 }
 
 // canViewAgentEnv checks whether the requesting user is allowed to see the
@@ -723,6 +736,10 @@ func (h *Handler) UpdateAgent(w http.ResponseWriter, r *http.Request) {
 	}
 	if req.Model != nil {
 		params.Model = pgtype.Text{String: *req.Model, Valid: true}
+	}
+	if req.FallbackModels != nil {
+		fm, _ := json.Marshal(req.FallbackModels)
+		params.FallbackModels = fm
 	}
 
 	agent, err = h.Queries.UpdateAgent(r.Context(), params)
